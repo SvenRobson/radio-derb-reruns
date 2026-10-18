@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+  <channel>
+    <title>Radio Derb Reruns</title>
+    <link>https://www.johnderbyshire.com/Opinions/RadioDerb/page.html</link>
+    <description>Random episodes from the Radio Derb archive (2004–2025), resurfaced one at a time.</description>
+    <language>en-us</language>
+    <itunes:author>John Derbyshire</itunes:author>
+    <itunes:image href="https://www.johnderbyshire.com/Opinions/RadioDerb/wireless.jpg"/>
+    <image><url>https://www.johnderbyshire.com/Opinions/RadioDerb/wireless.jpg</url><title>Radio Derb Reruns</title><link>https://www.johnderbyshire.com/Opinions/RadioDerb/page.html</link></image>
+    <lastBuildDate>Sun, 18 Oct 2026 20:01:37 +0000</lastBuildDate>
+
+  </channel>
+</rss>
