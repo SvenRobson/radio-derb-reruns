@@ -23,7 +23,21 @@ import requests
 from bs4 import BeautifulSoup
 
 ARCHIVE_URL = "https://www.johnderbyshire.com/Opinions/RadioDerb/page.html"
-ARTWORK_URL = "https://www.johnderbyshire.com/Opinions/RadioDerb/wireless.jpg"
+DEFAULT_ARTWORK = "https://www.johnderbyshire.com/Opinions/RadioDerb/wireless.jpg"
+
+
+def artwork_url():
+    """Use artwork.jpg/.png from the repo if present (served by GitHub Pages)."""
+    if os.environ.get("ARTWORK_URL"):
+        return os.environ["ARTWORK_URL"]
+    repo = os.environ.get("GITHUB_REPOSITORY", "")      # e.g. "owner/repo"
+    for name in ("artwork.jpg", "artwork.jpeg", "artwork.png"):
+        if Path(name).exists() and "/" in repo:
+            owner, name_ = repo.split("/", 1)
+            # version param makes podcast apps notice when you swap the image
+            v = int(Path(name).stat().st_size)
+            return f"https://{owner.lower()}.github.io/{name_}/{name}?v={v}"
+    return DEFAULT_ARTWORK
 
 EPISODES_PER_RUN = int(os.environ.get("EPISODES_PER_RUN", "1"))
 SEED_EPISODES = int(os.environ.get("SEED_EPISODES", "3"))   # first run only
@@ -154,6 +168,7 @@ def air_one(archive, state):
 
 
 def write_feed(state):
+    art = escape(artwork_url())
     items = []
     for e in reversed(state["aired"][-MAX_FEED_ITEMS:]):
         desc = (f"Originally aired {pretty(e['date'])}.\n\n"
@@ -175,8 +190,8 @@ def write_feed(state):
     <description>Random episodes from the Radio Derb archive (2004–2025), resurfaced one at a time.</description>
     <language>en-us</language>
     <itunes:author>John Derbyshire</itunes:author>
-    <itunes:image href="{ARTWORK_URL}"/>
-    <image><url>{ARTWORK_URL}</url><title>{escape(FEED_TITLE)}</title><link>{ARCHIVE_URL}</link></image>
+    <itunes:image href="{art}"/>
+    <image><url>{art}</url><title>{escape(FEED_TITLE)}</title><link>{ARCHIVE_URL}</link></image>
     <lastBuildDate>{format_datetime(datetime.now(timezone.utc))}</lastBuildDate>
 {chr(10).join(items)}
   </channel>
