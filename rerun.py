@@ -64,15 +64,46 @@ def load_archive():
     return episodes
 
 
-def find_audio(page_url):
-    """Return (audio_url, mime) from an episode transcript page, or (None, None)."""
-    soup = BeautifulSoup(get(page_url).text, "html.parser")
-    for a in soup.find_all("a", href=True):
-        href = a["href"].split("?")[0].lower()
-        if href.endswith(".mp3"):
-            return urljoin(page_url, a["href"]), "audio/mpeg"
-        if href.endswith(".m4a"):
-            return urljoin(page_url, a["href"]), "audio/mp4"
+AUDIO_RE = re.compile(r"\.(mp3|m4a)(?:[?#]|$)", re.I)
+MIME = {"mp3": "audio/mpeg", "m4a": "audio/mp4"}
+
+
+def url_ok(url):
+    """True if the URL answers with something that isn't an HTML error page."""
+    for method in ("head", "get"):
+        try:
+            r = requests.request(method, url, headers=HEADERS, timeout=30,
+                                 allow_redirects=True, stream=True)
+            r.close()
+            if r.ok and "text/html" not in r.headers.get("Content-Type", ""):
+                return True
+            if r.status_code not in (403, 405):   # some servers refuse HEAD
+                return False
+        except requests.RequestException:
+            pass
+    return False
+
+
+def find_audio(page_url, date):
+    """Return (audio_url, mime) for an episode, or (None, None)."""
+    html = get(page_url).text
+    soup = BeautifulSoup(html, "html.parser")
+    # 1. Any link, <audio>, <source>, <embed>, etc. pointing at an audio file
+    for tag in soup.find_all(True):
+        for attr in ("href", "src", "data-src", "value"):
+            v = (tag.get(attr) or "").strip()
+            m = AUDIO_RE.search(v)
+            if m:
+                return urljoin(page_url, v), MIME[m.group(1).lower()]
+    # 2. Audio URL anywhere in the raw HTML (scripts, players, etc.)
+    m = re.search(r"""["'(=]\s*([^"'()\s<>]+\.(mp3|m4a))\b""", html, re.I)
+    if m:
+        return urljoin(page_url, m.group(1)), MIME[m.group(2).lower()]
+    # 3. The site's usual naming convention
+    guess = urljoin(page_url, f"SoundFiles/{date}.mp3")
+    if url_ok(guess):
+        return guess, "audio/mpeg"
+    print(f"  No audio found for {date}. Page starts: {html[:300]!r}")
     return None, None
 
 
@@ -101,7 +132,7 @@ def air_one(archive, state):
     random.shuffle(pool)
     for date in pool[:10]:
         ep = archive[date]
-        url, mime = find_audio(ep["page"])
+        url, mime = find_audio(ep["page"], date)
         if not url:
             state["skipped"].append(date)  # e.g. the transcript-only 4/22/2011
             continue
