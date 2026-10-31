@@ -82,6 +82,28 @@
    "mime": "audio/mpeg",
    "length": 62751373,
    "pubDate": "Sat, 24 Oct 2026 07:51:26 +0000"
+  },
+  {
+   "date": "2012-05-04",
+   "guid": "radio-derb-rerun-2012-05-04-c1",
+   "title": "May 4, 2012: Government scandals, Budget follies, The majority-minority Democratic Party\u2026",
+   "topics": [
+    "Government scandals",
+    "Budget follies",
+    "The majority-minority Democratic Party",
+    "Europe's rising ethnonationalism",
+    "Chinese dissident Chen Guangcheng",
+    "Obama's white girlfriend",
+    "Islamists rule on sex with corpses",
+    "Has illegal-alien triumphalism peaked?",
+    "\"A man was attacked by a group of people\"",
+    "Our most & least peaceful states"
+   ],
+   "page": "https://www.johnderbyshire.com/Opinions/RadioDerb/2012-05-04.html",
+   "audio": "https://www.johnderbyshire.com/Opinions/RadioDerb/SoundFiles/2012-05-04.mp3",
+   "mime": "audio/mpeg",
+   "length": 29584956,
+   "pubDate": "Sat, 31 Oct 2026 09:14:22 +0000"
   }
  ],
  "skipped": [],
@@ -90,6 +112,7 @@
   "2016-02-19",
   "2005-07-28",
   "2016-01-08",
-  "2024-08-30"
+  "2024-08-30",
+  "2012-05-04"
  ]
 }
